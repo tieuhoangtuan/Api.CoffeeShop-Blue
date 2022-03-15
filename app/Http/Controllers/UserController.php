@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use Auth;
 
 class UserController extends Controller
 {
@@ -70,7 +71,9 @@ class UserController extends Controller
     public function login(Request $request)
     {
         $credenticals = $request->all();
-
+        if (!Auth::attempt(['username' => $credenticals['username'], 'password' => $credenticals['password']])) {
+            return response('failed');
+        }
         return response($credenticals);
     }
 }

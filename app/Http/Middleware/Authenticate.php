@@ -20,12 +20,4 @@ class Authenticate extends Middleware
             return route('login');
         }
     }
-
-    public function handle($request, Closure $next, ...$guards)
-    {
-        if (! $request->expectsJson()) {
-            return response("Not Authenticated.");
-        }
-        return $next($request);
-    }
 }
