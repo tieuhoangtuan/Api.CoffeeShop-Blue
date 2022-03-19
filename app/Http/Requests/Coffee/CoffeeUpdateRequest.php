@@ -34,7 +34,7 @@ class CoffeeUpdateRequest extends FormRequest
     {
         return [
             'name'        => 'required', 
-            'image'       => 'required|image', 
+            'image'       => 'image', 
             'price'       => 'required|numeric', 
             'type'        => 'required|integer', 
             'brand'       => 'required|integer', 

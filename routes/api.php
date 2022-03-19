@@ -28,7 +28,7 @@ Route::prefix('v1')->group(function () {
                     Route::get('/', 'index');
                     Route::post('/', 'store');
                     Route::get('/{id}', 'show');
-                    Route::put('/{id}', 'update');
+                    Route::post('/{id}', 'update');
                     Route::delete('/{id}', 'destroy');
                 });
             });

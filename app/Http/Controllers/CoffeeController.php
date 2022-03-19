@@ -60,6 +60,32 @@ class CoffeeController extends Controller
     public function store(CoffeeStoreRequest $request)
     {
         try {
+            $data = [
+                'name' => $request->name, 
+                'image' => $image_fullname, 
+                'status' => 1, 
+                'price' => $request->price, 
+                'type' => $request->type, 
+                'brand' => $request->brand, 
+                'description' => $request->description
+            ];
+
+            $image = $request->image;
+            $image_fullname = $image->getClientOriginalName();
+
+            // move image to coffee image folder
+            $upload_path = config('coffeeshop.coffee_image_path');
+            $image->move($upload_path, $image_fullname);
+
+            // insert data
+            Coffee::create($data);
+
+            return $this->myHttpResponse->response(
+                true, 
+                [], 
+                MyHttpResponse::HTTP_CREATED, 
+                MyHttpResponse::CREATE_SUCCESS_MESSAGE
+            );
       
         } catch (\Illuminate\Database\QueryException $e) {
             return $this->myHttpResponse->response(
@@ -113,7 +139,7 @@ class CoffeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(CoffeeUpdateRequest $request, $id)
     {
         try {
             $coffee = Coffee::find($id);
@@ -132,8 +158,24 @@ class CoffeeController extends Controller
                 'type' => $request->type, 
                 'brand' => $request->brand, 
                 'description' => $request->description, 
-                'status' => 1
+                'status' => $request->status
             ];
+
+            if ($request->image) {
+                $image = $request->image;
+                $image_fullname = $image->getClientOriginalName();
+                $image_old = $coffee->image;
+    
+                // move image to coffee image folder
+                $upload_path = config('coffeeshop.coffee_image_path');
+                if (file_exists($upload_path.$image_old)) {
+                    unlink($upload_path.$image_old);
+                }
+
+                $image->move($upload_path, $image_fullname);
+
+                $data['image'] = $image_fullname;
+            }
 
             $coffee->update($data);
 
@@ -170,6 +212,12 @@ class CoffeeController extends Controller
                     MyHttpResponse::HTTP_NOT_FOUND, 
                     MyHttpResponse::NOT_FOUND_MESSAGE
                 );
+            }
+
+            $image_old = $coffee->image;
+            $upload_path = config('coffeeshop.coffee_image_path');
+            if (file_exists($upload_path.$image_old)) {
+                unlink($upload_path.$image_old);
             }
 
             $coffee->delete();
