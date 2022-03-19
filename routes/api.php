@@ -3,6 +3,7 @@
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
+use App\Http\Controllers\CoffeeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -18,12 +19,18 @@ use App\Http\Controllers\UserController;
 
 
 Route::prefix('v1')->group(function () {
-    Route::get('login', [UserController::class, 'login'])->name("login");
+    Route::post('/login', [UserController::class, 'login'])->name("login");
 
     Route::middleware('auth:api')->group(function () {
         Route::prefix('admin')->group(function () {
-            Route::get('coffee', function () {
-                return response('ok');
+            Route::prefix('coffees')->group(function () {
+                Route::controller(CoffeeController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::put('/{id}', 'update');
+                    Route::delete('/{id}', 'destroy');
+                });
             });
         });
     });
