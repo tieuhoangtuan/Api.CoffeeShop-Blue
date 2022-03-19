@@ -60,6 +60,14 @@ class CoffeeController extends Controller
     public function store(CoffeeStoreRequest $request)
     {
         try {
+
+            $image = $request->image;
+            $image_fullname = $image->getClientOriginalName();
+
+            // move image to coffee image folder
+            $upload_path = config('coffeeshop.coffee_image_path');
+            $image->move($upload_path, $image_fullname);
+
             $data = [
                 'name' => $request->name, 
                 'image' => $image_fullname, 
@@ -69,13 +77,6 @@ class CoffeeController extends Controller
                 'brand' => $request->brand, 
                 'description' => $request->description
             ];
-
-            $image = $request->image;
-            $image_fullname = $image->getClientOriginalName();
-
-            // move image to coffee image folder
-            $upload_path = config('coffeeshop.coffee_image_path');
-            $image->move($upload_path, $image_fullname);
 
             // insert data
             Coffee::create($data);
