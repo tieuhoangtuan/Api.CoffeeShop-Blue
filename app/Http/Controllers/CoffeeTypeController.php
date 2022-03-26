@@ -4,11 +4,11 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Helpers\MyHttpResponse;
-use App\Http\Requests\Coffee\CoffeeStoreRequest;
-use App\Http\Requests\Coffee\CoffeeUpdateRequest;
-use App\Models\Coffee;
+use App\Http\Requests\CoffeeType\CoffeeTypeStoreRequest;
+use App\Http\Requests\CoffeeType\CoffeeTypeUpdateRequest;
+use App\Models\CoffeeType;
 
-class CoffeeController extends Controller
+class CoffeeTypeController extends Controller
 {
     private  MyHttpResponse $myHttpResponse;
 
@@ -25,7 +25,7 @@ class CoffeeController extends Controller
     public function index()
     {
         try {
-            $data = Coffee::with('coffeeBrand', 'coffeeType')->get();
+            $data = CoffeeType::all();
             if (!$data = empty($data) ? [] : $data->toArray()) {
                 return $this->myHttpResponse->response(
                     false, 
@@ -57,32 +57,15 @@ class CoffeeController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(CoffeeStoreRequest $request)
+    public function store(CoffeeTypeStoreRequest $request)
     {
         try {
-
-            $image = $request->image;
-            $image_fullname = $image->getClientOriginalName();
-
-            // move image to coffee image folder
-            $upload_path = config('coffeeshop.coffee_image_path');
-
-            if (!file_exists($upload_path)) {
-                $image->move($upload_path, $image_fullname);
-            }
-
             $data = [
-                'name' => $request->name, 
-                'image' => $image_fullname, 
-                'status' => 1, 
-                'price' => $request->price, 
-                'type' => $request->type, 
-                'brand' => $request->brand, 
-                'description' => $request->description
+                'name' => $request->name
             ];
 
             // insert data
-            Coffee::create($data);
+            CoffeeType::create($data);
 
             return $this->myHttpResponse->response(
                 true, 
@@ -110,7 +93,7 @@ class CoffeeController extends Controller
     public function show($id)
     {
         try {
-            $data = Coffee::where('id', $id)->with('coffeeBrand', 'coffeeType')->first();
+            $data = CoffeeType::where('id', $id)->first();
             if (!$data = empty($data) ? [] : $data->toArray()) {
                 return $this->myHttpResponse->response(
                     false, 
@@ -143,11 +126,11 @@ class CoffeeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(CoffeeUpdateRequest $request, $id)
+    public function update(CoffeeTypeUpdateRequest $request, $id)
     {
         try {
-            $coffee = Coffee::find($id);
-            if (!$coffee = empty($coffee) ? [] : $coffee) {
+            $coffeeType = CoffeeType::find($id);
+            if (!$coffeeType = empty($coffeeType) ? [] : $coffeeType) {
                 return $this->myHttpResponse->response(
                     false, 
                     [], 
@@ -158,30 +141,9 @@ class CoffeeController extends Controller
 
             $data = [
                 'name' => $request->name, 
-                'price' => $request->price, 
-                'type' => $request->type, 
-                'brand' => $request->brand, 
-                'description' => $request->description, 
-                'status' => $request->status
             ];
 
-            if ($request->image) {
-                $image = $request->image;
-                $image_fullname = $image->getClientOriginalName();
-                $image_old = $coffee->image;
-    
-                // move image to coffee image folder
-                $upload_path = config('coffeeshop.coffee_image_path');
-                if (file_exists($upload_path.$image_old)) {
-                    unlink($upload_path.$image_old);
-                }
-
-                $image->move($upload_path, $image_fullname);
-
-                $data['image'] = $image_fullname;
-            }
-
-            $coffee->update($data);
+            $coffeeType->update($data);
 
             return $this->myHttpResponse->response(
                 true, 
@@ -208,8 +170,8 @@ class CoffeeController extends Controller
     public function destroy($id)
     {
         try {
-            $coffee = Coffee::find($id);
-            if (!$coffee = empty($coffee) ? [] : $coffee) {
+            $coffeeType = CoffeeType::find($id);
+            if (!$coffeeType = empty($coffeeType) ? [] : $coffeeType) {
                 return $this->myHttpResponse->response(
                     false, 
                     [], 
@@ -218,13 +180,7 @@ class CoffeeController extends Controller
                 );
             }
 
-            $image_old = $coffee->image;
-            $upload_path = config('coffeeshop.coffee_image_path');
-            if (file_exists($upload_path.$image_old)) {
-                unlink($upload_path.$image_old);
-            }
-
-            $coffee->delete();
+            $coffeeType->delete();
 
             return $this->myHttpResponse->response(
                 true, 
@@ -232,39 +188,6 @@ class CoffeeController extends Controller
                 MyHttpResponse::HTTP_OK, 
                 MyHttpResponse::DELETE_SUCCESS_MESSAGE
             );
-        } catch (\Illuminate\Database\QueryException $e) {
-            return $this->myHttpResponse->response(
-                false, 
-                [], 
-                MyHttpResponse::HTTP_INTERNAL_SERVER_ERROR, 
-                $e->getMessage()
-            ); 
-        }
-    }
-
-    public function toggleStatus($id)
-    {
-        try {
-            $coffee = Coffee::find($id);
-            if (!$coffee = empty($coffee) ? [] : $coffee) {
-                return $this->myHttpResponse->response(
-                    false, 
-                    [], 
-                    MyHttpResponse::HTTP_NOT_FOUND, 
-                    MyHttpResponse::NOT_FOUND_MESSAGE
-                );
-            }
-
-            $data['status'] = $coffee->status == 0 ? 1 : 0;
-            $coffee->update($data);
-
-            return $this->myHttpResponse->response(
-                true, 
-                [], 
-                MyHttpResponse::HTTP_OK, 
-                MyHttpResponse::UPDATE_SUCCESS_MESSAGE
-            );
-
         } catch (\Illuminate\Database\QueryException $e) {
             return $this->myHttpResponse->response(
                 false, 

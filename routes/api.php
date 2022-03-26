@@ -4,6 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CoffeeController;
+use App\Http\Controllers\CoffeeBrandController;
+use App\Http\Controllers\CoffeeTypeController;
 
 /*
 |--------------------------------------------------------------------------
@@ -29,6 +31,27 @@ Route::prefix('v1')->group(function () {
                     Route::post('/', 'store');
                     Route::get('/{id}', 'show');
                     Route::post('/{id}', 'update');
+                    Route::delete('/{id}', 'destroy');
+                    Route::put('/toggle-status/{id}', 'toggleStatus');
+                });
+            });
+
+            Route::prefix('coffee-brands')->group(function () {
+                Route::controller(CoffeeBrandController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::put('/{id}', 'update');       
+                    Route::delete('/{id}', 'destroy');
+                });
+            });
+
+            Route::prefix('coffee-types')->group(function () {
+                Route::controller(CoffeeTypeController::class)->group(function () {
+                    Route::get('/', 'index');
+                    Route::post('/', 'store');
+                    Route::get('/{id}', 'show');
+                    Route::put('/{id}', 'update');       
                     Route::delete('/{id}', 'destroy');
                 });
             });
