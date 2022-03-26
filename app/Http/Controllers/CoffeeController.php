@@ -67,7 +67,7 @@ class CoffeeController extends Controller
             // move image to coffee image folder
             $upload_path = config('coffeeshop.coffee_image_path');
 
-            if (!file_exists($upload_path)) {
+            if (file_exists($upload_path)) {
                 $image->move($upload_path, $image_fullname);
             }
 
