@@ -12,6 +12,8 @@ class CoffeeController extends Controller
 {
     private  MyHttpResponse $myHttpResponse;
 
+    const DIRECTORY_NOT_EXISTS = 'Directory doesn\'t exists';
+
     public function __construct(MyHttpResponse $myHttpResponse)
     {
         $this->myHttpResponse = $myHttpResponse;
@@ -62,14 +64,25 @@ class CoffeeController extends Controller
         try {
 
             $image = $request->image;
-            $image_fullname = $image->getClientOriginalName();
+            $image_name = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $image_extension = $image->getClientOriginalExtension();
 
-            // move image to coffee image folder
             $upload_path = config('coffeeshop.coffee_image_path');
 
-            if (file_exists($upload_path)) {
-                $image->move($upload_path, $image_fullname);
+            // check if coffee image path directory exists
+            if (!file_exists($upload_path)) {
+                return $this->myHttpResponse->response(
+                    false, 
+                    [], 
+                    MyHttpResponse::HTTP_NOT_FOUND, 
+                    self::DIRECTORY_NOT_EXISTS
+                ); 
             }
+
+            $image_fullname = $image_name . time() . '.' . $image_extension;
+            
+            // move image to coffee image folder
+            $image->move($upload_path, $image_fullname);
 
             $data = [
                 'name' => $request->name, 
@@ -167,15 +180,27 @@ class CoffeeController extends Controller
 
             if ($request->image) {
                 $image = $request->image;
-                $image_fullname = $image->getClientOriginalName();
+                $image_name = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $image_extension = $image->getClientOriginalExtension();
                 $image_old = $coffee->image;
     
                 // move image to coffee image folder
                 $upload_path = config('coffeeshop.coffee_image_path');
+
+                if (!file_exists($upload_path)) {
+                    return $this->myHttpResponse->response(
+                        false, 
+                        [], 
+                        MyHttpResponse::HTTP_NOT_FOUND, 
+                        self::DIRECTORY_NOT_EXISTS
+                    ); 
+                }
+
                 if (file_exists($upload_path.$image_old)) {
                     unlink($upload_path.$image_old);
                 }
 
+                $image_fullname = $image_name . time() . '.' . $image_extension;
                 $image->move($upload_path, $image_fullname);
 
                 $data['image'] = $image_fullname;
@@ -218,10 +243,20 @@ class CoffeeController extends Controller
                 );
             }
 
-            $image_old = $coffee->image;
+            $image = $coffee->image;
             $upload_path = config('coffeeshop.coffee_image_path');
-            if (file_exists($upload_path.$image_old)) {
-                unlink($upload_path.$image_old);
+
+            if (!file_exists($upload_path)) {
+                return $this->myHttpResponse->response(
+                    false, 
+                    [], 
+                    MyHttpResponse::HTTP_NOT_FOUND, 
+                    self::DIRECTORY_NOT_EXISTS
+                ); 
+            }
+
+            if (file_exists($upload_path.$image)) {
+                unlink($upload_path.$image);
             }
 
             $coffee->delete();
