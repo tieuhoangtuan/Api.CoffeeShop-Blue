@@ -34,11 +34,12 @@ class CoffeeUpdateRequest extends FormRequest
     {
         return [
             'name'        => 'required|unique:coffees,name,' . $this->id, 
-            'image'       => 'required|image', 
+            'image'       => 'image', 
             'price'       => 'required|numeric', 
             'type'        => 'required|integer', 
             'brand'       => 'required|integer', 
-            'description' => 'required'
+            'description' => 'required', 
+            'status'      => 'required'
         ];
     }
 
@@ -47,7 +48,6 @@ class CoffeeUpdateRequest extends FormRequest
         return [
             'name.required'        => 'Coffee name is required', 
             'name.unique'          => 'Coffee name already exist', 
-            'image.required'       => 'Coffee image file is required', 
             'image.image'          => 'Coffee image file type must be jpg, jpeg, png, bmp, gif, svg, or webp', 
             'price.required'       => 'Coffee price is required', 
             'price.numeric'        => 'Coffee price must be numeric', 
@@ -55,7 +55,8 @@ class CoffeeUpdateRequest extends FormRequest
             'type.integer'         => 'Coffee type value is invalid', 
             'brand.required'       => 'Coffee brand is required', 
             'brand.integer'        => 'Coffee type value is invalid', 
-            'description.required' => 'Coffee description is required', 
+            'description.required' => 'Coffee description is required',
+            'status.required'      => 'Coffee status is required' 
         ];
     }
 
