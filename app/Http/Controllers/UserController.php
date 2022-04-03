@@ -13,8 +13,9 @@ class UserController extends Controller
 {
     private  MyHttpResponse $myHttpResponse;
 
-    private const INVALID_CREDENTICALS = 'Invalid Credenticals';
-    private const LOGIN_SUCCESS = 'Login Success';
+    const INVALID_CREDENTICALS = 'Invalid Credenticals';
+    const LOGIN_SUCCESS = 'Login Success';
+    const ADMIN = 'Administrator';
 
     public function __construct(MyHttpResponse $myHttpResponse)
     {
@@ -73,6 +74,49 @@ class UserController extends Controller
             [
                 'user' => Auth::user(),
                 'access_token' => $access_token
+            ],
+            MyHttpResponse::HTTP_OK,
+            self::LOGIN_SUCCESS
+        );
+    }
+
+    /**
+     * Admin login.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \App\Helpers\MyHttpResponse
+     */
+    public function loginAdmin(UserLoginRequest $request)
+    {
+        $credenticals = $request->all();
+
+        if (!Auth::attempt(['username' => $credenticals['username'], 'password' => $credenticals['password']])) {
+            return $this->myHttpResponse->response(
+                false,
+                [],
+                MyHttpResponse::HTTP_BAD_REQUEST,
+                self::INVALID_CREDENTICALS
+            );
+        }
+
+        $user = User::where('username', $credenticals['username'])->first();
+
+        if ($user->role->name != self::ADMIN) {
+            return $this->myHttpResponse->response(
+                false,
+                [],
+                MyHttpResponse::HTTP_BAD_REQUEST,
+                self::INVALID_CREDENTICALS
+            );
+        }
+        
+        $access_token = $user->createToken('admin_api_token')->accessToken;
+
+        return $this->myHttpResponse->response(
+            true,
+            [
+                'user' => Auth::user(),
+                'admin_access_token' => $access_token
             ],
             MyHttpResponse::HTTP_OK,
             self::LOGIN_SUCCESS

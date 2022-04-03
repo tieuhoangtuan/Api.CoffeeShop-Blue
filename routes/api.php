@@ -22,6 +22,7 @@ use App\Http\Controllers\CoffeeTypeController;
 
 Route::prefix('v1')->group(function () {
     Route::post('/login', [UserController::class, 'login'])->name("login");
+    Route::post('/login-admin', [UserController::class, 'loginAdmin'])->name("login_admin");
 
     Route::middleware('auth:api')->group(function () {
         Route::prefix('admin')->group(function () {
