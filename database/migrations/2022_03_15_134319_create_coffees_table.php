@@ -17,7 +17,7 @@ return new class extends Migration
             $table->id();
             $table->string("name", 50);
             $table->string("image", 255);
-            $table->string("price", 255);
+            $table->float("price");
             $table->integer("type");
             $table->smallInteger("status");
             $table->integer("brand");
