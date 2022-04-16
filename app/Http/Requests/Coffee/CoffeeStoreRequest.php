@@ -35,7 +35,7 @@ class CoffeeStoreRequest extends FormRequest
         return [
             'name'        => 'required|unique:coffees', 
             'image'       => 'required|image', 
-            'price'       => 'required|numeric', 
+            'price'       => 'required|numeric|min:0', 
             'type'        => 'required|integer', 
             'brand'       => 'required|integer', 
             'description' => 'required'
@@ -51,6 +51,7 @@ class CoffeeStoreRequest extends FormRequest
             'image.image'          => 'Coffee image file type must be jpg, jpeg, png, bmp, gif, svg, or webp', 
             'price.required'       => 'Coffee price is required', 
             'price.numeric'        => 'Coffee price must be numeric', 
+            'price.min'            => 'Coffee price must be positive number', 
             'type.required'        => 'Coffee type is required', 
             'type.integer'         => 'Coffee type value is invalid', 
             'brand.required'       => 'Coffee brand is required', 
