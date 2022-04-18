@@ -21,7 +21,8 @@
     + php artisan migrate
     + php artisan passport:install
 - Sau khi hoàn tất, gõ lệnh php artisan serve để start sever.
-## Tải hoặc clone Source chính CoffeeShop-Blue tại [link]('https://github.com/ManTT-12/CoffeeShop-Blue') này
+-----
+## 👉 Sau khi cài đặt Api.CoffeeShop-Blue, tải hoặc clone source chính CoffeeShop-Blue tại [link](https://github.com/ManTT-12/CoffeeShop-Blue) này.
 
 <p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400"></a></p>
 
